@@ -1,0 +1,47 @@
+﻿<Page x:Class="NewProject.SetSkippedConditions"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:NewProject"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SetSkippedConditions">
+    <GroupBox Header="Set Skipped Component Conditions" Margin="5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Margin" Value="5, 0"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="Padding" Value="2"/>
+                    <Setter Property="Margin" Value="10"/>
+                </Style>
+            </Grid.Resources>
+            <Label Grid.Row="0" Content="Skipped Prefixes for components (Separated by comma):"/>
+            <TextBox Grid.Row="1" Name="SkippedPrefixesBoxes"/>
+
+            <Label Grid.Row="2" Content="Skipped Keywords for components (Separated by comma):"/>
+            <TextBox Grid.Row="3" Name="SkippedKeywordsBoxes"/>
+
+            <Label Grid.Row="4" Content="Skipped Suffixes for components (Separated by comma):"/>
+            <TextBox Grid.Row="5" Name="SkippedSuffixesBoxes"/>
+
+            <Button Grid.Row="6" Margin="10" Width="120" Content="Confirm" HorizontalAlignment="Right"
+                MaxHeight="30" Name="ConfirmButton"
+                BorderThickness="0.5"/>
+        </Grid>
+    </GroupBox>
+</Page>

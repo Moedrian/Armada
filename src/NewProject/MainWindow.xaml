@@ -1,0 +1,41 @@
+﻿<Window x:Class="NewProject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Create New Project" Height="600" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="BorderThickness" Value="0.5"/>
+                <Setter Property="MaxHeight" Value="35"></Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.2*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Source="images/lens.jpg" Stretch="UniformToFill" Margin="5"/>
+        <Frame NavigationUIVisibility="Hidden" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+               Name="PresentationFrame" Source="{Binding CurrentFrame}" Margin="5"/>
+        <Button Grid.Row="1" Grid.Column="1" Name="BackButton" IsEnabled="{Binding IsBackEnabled}" Visibility="{Binding BackVisibility}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="images/left_arrow.ico" MaxHeight="20" Margin="5"/>
+                <TextBlock VerticalAlignment="Center" Text="Back"/>
+            </StackPanel>
+        </Button>
+        <Button Grid.Row="1" Grid.Column="2" Name="NextButton" IsEnabled="{Binding IsNextEnabled}" Visibility="{Binding NextVisibility}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="Next"/>
+                <Image Source="images/right_arrow.ico" MaxHeight="20" Margin="5"/>
+            </StackPanel>
+        </Button>
+    </Grid>
+</Window>

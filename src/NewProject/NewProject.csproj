@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>camera_flash.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\left_arrow.ico" />
+    <None Remove="images\lens.jpg" />
+    <None Remove="images\right_arrow.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="camera_flash.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\left_arrow.ico" />
+    <Resource Include="images\lens.jpg" />
+    <Resource Include="images\right_arrow.ico" />
+  </ItemGroup>
+
+</Project>
