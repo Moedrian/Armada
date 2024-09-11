@@ -57,10 +57,13 @@ public partial class SelectProject : UserControl
         AvailableProjectList.SelectionChanged += (_, _) =>
         {
             MainWindow.Status.IsNextEnabled = true;
-            MainWindow.Status.SelectedProject = (string)AvailableProjectList.SelectedItem;
+
+            var selection = (string)AvailableProjectList.SelectedItem;
+            if (string.IsNullOrEmpty(selection))
+                return;
 
             var disk = MainWindow.Status.SelectedDisk;
-            MainWindow.Status.SelectedProject = Path.Combine(disk, MainWindow.Status.SelectedProject);
+            MainWindow.Status.SelectedProject = Path.Combine(disk, selection);
 
             MainWindow.NextButtonUri = MainWindow.SkippedConditionsUri;
         };

@@ -33,7 +33,7 @@
         </Button>
         <Button Grid.Row="1" Grid.Column="2" Name="NextButton" IsEnabled="{Binding IsNextEnabled}" Visibility="{Binding NextVisibility}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Center" Text="Next"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding NextButtonText}"/>
                 <Image Source="images/right_arrow.ico" MaxHeight="20" Margin="5"/>
             </StackPanel>
         </Button>

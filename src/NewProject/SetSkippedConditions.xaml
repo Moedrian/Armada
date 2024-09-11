@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SetSkippedConditions">
-    <GroupBox Header="Set Skipped Component Conditions" Margin="5">
+    <GroupBox Header="Set Skipped Part Conditions" Margin="5">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

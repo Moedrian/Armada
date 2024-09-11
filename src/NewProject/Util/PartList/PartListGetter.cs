@@ -72,19 +72,19 @@ public static class PartListGetter
             .ToDictionary(s => s[0], s => s[4]);
     }
 
-    public static Component[] GetAllComponents(LeonardoType type, string program, out bool bomExists)
+    public static Part[] GetAllComponents(LeonardoType type, string program, out bool bomExists)
     {
         var boardDir = GetBoardDirectory(type, program);
         var dbfFile = Path.Combine(boardDir, "PARTLIST.DBF");
         var parser = new DbfParser(dbfFile);
         var records = parser.GetAllDbfRecords();
-        var cl = new List<Component>();
+        var cl = new List<Part>();
         Dictionary<string, string> bom = [];
 
         bomExists = false;
 
         try
-            {
+        {
             bom = GetBom(boardDir);
             bomExists = true;
         }
@@ -93,7 +93,7 @@ public static class PartListGetter
             // hmmm....
         }
 
-        var availableComponents = records.Select(r => new Component(r)).Where(c => c.Available);
+        var availableComponents = records.Select(r => new Part(r)).Where(c => c.Available);
 
         if (!bomExists) return [..availableComponents];
 
@@ -109,7 +109,7 @@ public static class PartListGetter
         return [..cl];
     }
 
-    public static Component[] GetTopSideComponents(LeonardoType type, string program, out bool bomExists)
+    public static Part[] GetTopSideComponents(LeonardoType type, string program, out bool bomExists)
     {
         var side = GetTopSide(type, program);
         return GetAllComponents(type, program, out bomExists).Where(c => c.MountSide == side).ToArray();

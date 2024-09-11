@@ -2,7 +2,7 @@
 
 namespace NewProject.Util.PartList;
 
-public class Component
+public class Part
 {
     public string DrawingReference { get; init; }
     public Side MountSide { get; init; }
@@ -10,7 +10,7 @@ public class Component
     public string DeviceType { get; private set; } = "Not Identified";
     public bool Available { get; init; } = true;
 
-    public Component(DbfRecord dbfRecord)
+    public Part(DbfRecord dbfRecord)
     {
         const string dName = "DRAWING_RE";
         const string xName = "X_BARYCENT";

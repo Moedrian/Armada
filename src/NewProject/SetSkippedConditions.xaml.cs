@@ -30,7 +30,12 @@ public partial class SetSkippedConditions : Page
         // MainWindow.Status.SkippedSuffixes = [];
 
         MainWindow.Status.BackVisibility = Visibility.Visible;
+        MainWindow.BackButtonUri = MainWindow.SelectProjectUri;
+
+        MainWindow.Status.NextButtonText = MainWindow.NextText;
         MainWindow.Status.IsNextEnabled = false;
+
+        CreateProject.CheckComponentCollection.Clear();
 
         ConfirmButton.Click += delegate
         {

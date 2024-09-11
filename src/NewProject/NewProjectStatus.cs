@@ -37,13 +37,21 @@ public class NewProjectStatus : INotifyPropertyChanged
         set => SetField(ref _nextVisibility, value);
     }
 
+    private string _nextButtonText = "Next";
+
+    public string NextButtonText
+    {
+        get => _nextButtonText;
+        set => SetField(ref _nextButtonText, value);
+    }
+
     public string SelectedDisk { get; set; } = string.Empty;
     public string SelectedProject { get; set; } = string.Empty;
 
     public string[] SkippedPrefixes { get; set; } = [];
     public string[] SkippedKeywords { get; set; } = [];
     public string[] SkippedSuffixes { get; set; } = [];
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
