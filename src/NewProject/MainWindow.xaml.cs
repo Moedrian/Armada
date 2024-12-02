@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
-using NewProject.Serializable;
-using NewProject.Util.PartList;
+using ArmadaPack;
 
 namespace NewProject;
 
@@ -51,8 +50,11 @@ public partial class MainWindow : Window
                         cl.Add(new TestPart
                         {
                             DrawingReference = item.PartName,
-                            X = item.Barycenter.X,
-                            Y = item.Barycenter.Y
+                            BarycenterX = item.Barycenter.X,
+                            BarycenterY = item.Barycenter.Y,
+                            CoordinateX = item.Coordinates.X,
+                            CoordinateY = item.Coordinates.Y,
+                            Edge = item.Coordinates.Edge
                         });
                 }
 

@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src\NewProject\NewProject.csproj" />
+  <Project Path="src\ArmadaPack\ArmadaPack.csproj" Type="C#" />
+  <Project Path="src\PyRunner\PyRunner.csproj" />
+  <Properties Name="Visual Studio">
+    <Property Name="OpenWith" Value="17" />
+  </Properties>
+</Solution>

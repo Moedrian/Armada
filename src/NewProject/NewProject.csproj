@@ -6,6 +6,15 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>camera_flash.ico</ApplicationIcon>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,9 +28,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ArmadaPack\ArmadaPack.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="images\left_arrow.ico" />
     <Resource Include="images\lens.jpg" />
     <Resource Include="images\right_arrow.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Util\TpList\" />
   </ItemGroup>
 
 </Project>

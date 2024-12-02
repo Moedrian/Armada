@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using NewProject.Util.PartList;
+using NewProject.Util.TpList;
 
 namespace NewProject;
 
@@ -26,16 +28,18 @@ public partial class CreateProject : UserControl
         {
             Dispatcher.Invoke(delegate
             {
-                var prj = MainWindow.Status.SelectedProject;
-                var components = PartListGetter.GetTopSideComponents(LeonardoType.FlyingProbes, prj, out var bomExists);
+                try
+                {
+                    var prj = MainWindow.Status.SelectedProject;
+                    var components = Part.GetTopSideComponents(LeonardoType.FlyingProbes, prj, out var bomExists);
 
-                if (components.Length == 0)
-                {
-                    const string message = "Unable to get component list.";
-                    MessageBox.Show(message, "Notice", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else
-                {
+                    if (components.Length == 0)
+                    {
+                        const string message = "Unable to get component list.";
+                        MessageBox.Show(message, "Notice", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
                     if (!bomExists)
                     {
                         const string message =
@@ -43,17 +47,42 @@ public partial class CreateProject : UserControl
                         MessageBox.Show(message, "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
+                    var testPoints = TestPoint.GetAllTestPoints(LeonardoType.FlyingProbes, prj);
+
+                    if (testPoints.Length == 0)
+                    {
+                        const string message = "Unable to get test point list for coordinates computing.";
+                        MessageBox.Show(message, "Notice", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    var availableComponents = new List<Part>();
+
+                    foreach (var part in components)
+                    {
+                        if (part.TryCalculateBarycenterCoordinates(testPoints, out var co))
+                        {
+                            part.Coordinates = co;
+                            availableComponents.Add(part);
+                        }
+                    }
+
                     var prefixes = MainWindow.Status.SkippedPrefixes;
                     var keywords = MainWindow.Status.SkippedKeywords;
                     var suffixes = MainWindow.Status.SkippedSuffixes;
 
-                    var ccl = GetCandidates(components, prefixes, suffixes, keywords).OrderBy(c => c.PartName);
+                    var ccl = GetCandidates(availableComponents, prefixes, suffixes, keywords).OrderBy(c => c.PartName);
                     foreach (var cc in ccl)
                         CheckComponentCollection.Add(cc);
 
                     ComponentList.ItemsSource = CheckComponentCollection;
 
                     AttachEvents();
+                }
+                catch (Exception e)
+                {
+                    var lb = Environment.NewLine;
+                    MessageBox.Show(e.Message + lb + e.StackTrace, "Notice", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             });
         });
@@ -100,7 +129,7 @@ public partial class CreateProject : UserControl
                && !suffixes.Any(str => input.EndsWith(str, StrCmp));
     }
 
-    private static CheckPart[] GetCandidates(Part[] components, string[] prefixes, string[] suffixes, string[] keywords)
+    private static CheckPart[] GetCandidates(IEnumerable<Part> components, string[] prefixes, string[] suffixes, string[] keywords)
     {
         var noKeywords = (from c in components where !MatchKeywords(c.DrawingReference, prefixes, suffixes, keywords) select c);
         var noPrefixes = (from c in noKeywords where !MatchPrefixes(c.DrawingReference, prefixes) select c);
