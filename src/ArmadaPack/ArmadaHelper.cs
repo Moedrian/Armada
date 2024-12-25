@@ -9,6 +9,11 @@ namespace ArmadaPack
     {
         public static XmlSerializer VisionSerializer = new XmlSerializer(typeof(Vision));
 
+        public static int MillimetersToPixels(int len, int pixelRatio, int offsetPixels)
+        {
+            return (int)Math.Truncate((double)len / pixelRatio) + offsetPixels * 2;
+        }
+
         public static void Serialize(string filename, Vision vision)
         {
             using (var sw = new StreamWriter(filename))
@@ -33,7 +38,7 @@ namespace ArmadaPack
             try
             {
                 var interpreter = Path.Combine(workingDirectory, "py_env", "pythonw.exe");
-                var script = Path.Combine(workingDirectory, "py_scripts", "main.py");
+                var script = Path.Combine(workingDirectory, "py_env", "main.py");
                 var psi = new ProcessStartInfo
                 {
                     FileName = interpreter,

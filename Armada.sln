@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CF6BCFBC-EE2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewProject", "src\NewProject\NewProject.csproj", "{B7AF8B7B-E2B4-4272-AF2A-268AD0E20F3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyRunner", "src\PyRunner\PyRunner.csproj", "{D2122E11-1653-4C6D-88DD-DE2A04A0F1F3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,15 +23,12 @@ Global
 		{B7AF8B7B-E2B4-4272-AF2A-268AD0E20F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7AF8B7B-E2B4-4272-AF2A-268AD0E20F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7AF8B7B-E2B4-4272-AF2A-268AD0E20F3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2122E11-1653-4C6D-88DD-DE2A04A0F1F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2122E11-1653-4C6D-88DD-DE2A04A0F1F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2122E11-1653-4C6D-88DD-DE2A04A0F1F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2122E11-1653-4C6D-88DD-DE2A04A0F1F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D5A17198-0C97-4F6A-A180-9807AAEE0B13} = {CF6BCFBC-EE2C-4CA2-B11D-523CC2AE5D30}
 		{B7AF8B7B-E2B4-4272-AF2A-268AD0E20F3C} = {CF6BCFBC-EE2C-4CA2-B11D-523CC2AE5D30}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

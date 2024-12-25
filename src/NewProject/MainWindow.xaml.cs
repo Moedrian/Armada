@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
 using ArmadaPack;
+using NewProject.Util.LeonardoProperty;
+using NewProject.Util.PartList;
+using NewProject.Util.TpList;
 
 namespace NewProject;
 
@@ -41,44 +45,82 @@ public partial class MainWindow : Window
 
         NextButton.Click += delegate
         {
-            if (Status.NextButtonText == FinishText)
+            try
             {
-                var cl = new List<TestPart>();
-                foreach (var item in CreateProject.CheckComponentCollection)
+                if (Status.NextButtonText == FinishText)
                 {
-                    if (item is { IsChecked: true, Part: not null })
-                        cl.Add(new TestPart
+                    var sites = LeoProp.GetNumberOfBoards(LeonardoType.FlyingProbes, Status.SelectedProject);
+                    var testPoints = TestPoint.GetAllTestPoints(LeonardoType.FlyingProbes, Status.SelectedProject);
+
+                    var testGroups = new TestPartsGroup[sites];
+                    for (var i = 0; i < sites; i++)
+                    {
+                        var group = new TestPartsGroup { Site = i + 1 };
+
+                        var cl = new List<TestPart>();
+                        foreach (var item in CreateProject.CheckComponentCollection)
                         {
-                            DrawingReference = item.PartName,
-                            BarycenterX = item.Barycenter.X,
-                            BarycenterY = item.Barycenter.Y,
-                            CoordinateX = item.Coordinates.X,
-                            CoordinateY = item.Coordinates.Y,
-                            Edge = item.Coordinates.Edge
-                        });
-                }
+                            if (item is { IsChecked: true, Part: not null })
+                            {
+                                if (item.Part.TryCalculateBarycenterCoordinates(testPoints, i + 1, out var co))
+                                {
+                                    cl.Add(new TestPart
+                                    {
+                                        DrawingReference = item.PartName,
+                                        CoordinateX = co.X,
+                                        CoordinateY = co.Y,
+                                        Edge = co.Edge
+                                    });
+                                }
+                            }
+                        }
 
-                if (cl.Count == 0)
+                        if (cl.Count == 0)
+                            throw new Exception("Part Test List can not be empty.");
+
+                        group.TestParts = cl.ToArray();
+                        testGroups[i] = group;
+                    }
+
+                    var vision = new Vision
+                    {
+                        PixelRatio = Status.PixelRatio,
+                        BorderWidthPixels = Status.BorderWidth,
+                        SimilarityRate = Status.SimilarityRate,
+                        Groups = testGroups
+                    };
+
+                    var fullPath = Status.SelectedProject[..3] + Hierarchy + Status.SelectedProject[3..];
+                    var ftpDir = Path.Combine(fullPath, "PROGRAM\\FTP");
+
+                    // create vision\vision.xml
+                    var dir = Directory.CreateDirectory(Path.Combine(ftpDir, "Vision"));
+                    var file = Path.Combine(dir.FullName, "vision.xml");
+                    var sr = new XmlSerializer(typeof(Vision));
+                    using var sw = new StreamWriter(file);
+                    sr.Serialize(sw, vision);
+                   
+                    // copy templates
+                    var templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TPGM_TEMPLATES");
+                    var psi = new ProcessStartInfo("xcopy", $"\"{templateDir}\" \"{ftpDir}\" /Q /E /Y")
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    Process.Start(psi)?.WaitForExit();
+
+                    MessageBox.Show("Project file created, now you can safely close this window.", "Success",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
                 {
-                    MessageBox.Show("Part Test List can not be empty.", "Caution", MessageBoxButton.OK,
-                        MessageBoxImage.Information);
-                    return;
+                    PresentationFrame.Source = NextButtonUri;
                 }
-
-                var fullPath = Status.SelectedProject[..3] + Hierarchy + Status.SelectedProject[3..];
-                var ftpDir = Path.Combine(fullPath, "PROGRAM\\FTP", "Vision");
-                var dir = Directory.CreateDirectory(ftpDir);
-                var file = Path.Combine(dir.FullName, "vision.xml");
-                var sr = new XmlSerializer(typeof(Vision));
-                using var sw = new StreamWriter(file);
-                sr.Serialize(sw, new Vision { TestParts = cl.ToArray() });
-
-                MessageBox.Show("Project file created, now you can safely close this window.", "Success",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else
+            catch (Exception e)
             {
-                PresentationFrame.Source = NextButtonUri;
+                MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
         };
     }

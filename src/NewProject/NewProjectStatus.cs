@@ -45,6 +45,10 @@ public class NewProjectStatus : INotifyPropertyChanged
         set => SetField(ref _nextButtonText, value);
     }
 
+    public int PixelRatio { get; set; }
+    public int BorderWidth { get; set; }
+    public int SimilarityRate { get; set; }
+
     public string SelectedDisk { get; set; } = string.Empty;
     public string SelectedProject { get; set; } = string.Empty;
 

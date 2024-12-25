@@ -15,7 +15,7 @@ namespace NewProject;
 /// </summary>
 public partial class CreateProject : UserControl
 {
-    public static readonly ObservableCollection<CheckPart> CheckComponentCollection = new();
+    public static readonly ObservableCollection<CheckPart> CheckComponentCollection = [];
 
     public CreateProject()
     {
@@ -60,7 +60,7 @@ public partial class CreateProject : UserControl
 
                     foreach (var part in components)
                     {
-                        if (part.TryCalculateBarycenterCoordinates(testPoints, out var co))
+                        if (part.TryCalculateBarycenterCoordinates(testPoints, 1, out var co))
                         {
                             part.Coordinates = co;
                             availableComponents.Add(part);

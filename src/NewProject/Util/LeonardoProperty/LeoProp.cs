@@ -57,6 +57,26 @@ public static class LeoProp
         return string.Equals(side, "Up", StringComparison.OrdinalIgnoreCase) ? Side.Top : Side.Bottom;
     }
 
+    public static int GetNumberOfBoards(LeonardoType type, string program)
+    {
+        var programDir = GetProjectDirectory(type, program, "PRJ");
+        var panelIni = Path.Combine(programDir, "PROGRAM", "PANEL.INI");
+        if (!File.Exists(panelIni)) return 1;
+        var ini = new Ini(panelIni);
+        var value = ini.ReadOne("PanelOfBoard", "BoardNum");
+        if (string.IsNullOrWhiteSpace(value)) return 1;
+        return int.Parse(value);
+    }
+
+    public static int GetTestPointOffset(LeonardoType type, string program)
+    {
+        var adapterDir = GetAdapterDirectory(type, program);
+        var panelIni = Path.Combine(adapterDir, "PANEL.INI");
+        if (!File.Exists(panelIni)) return 0;
+        var ini = new Ini(panelIni);
+        return int.Parse(ini.ReadOne("Panel", "TpOffset"));
+    }
+
     public static Dictionary<string, string> GetDeviceCode()
     {
         return File.ReadLines(

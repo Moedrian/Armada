@@ -13,46 +13,28 @@ public class Part
 {
     public required string DrawingReference { get; init; }
     public required Side MountSide { get; init; }
-    public required Barycenter Barycenter { get; init; } = new();
     public string DeviceType { get; private set; } = "Not Identified";
-    public required bool Available { get; init; }
     public Coordinates Coordinates { get; set; } = new();
 
     [SetsRequiredMembers]
     public Part(DbfRecord dbfRecord)
     {
         const string dName = "DRAWING_RE";
-        const string xName = "X_BARYCENT";
-        const string yName = "Y_BARYCENT";
         const string sName = "MOUNT_SIDE";
 
         var dict = dbfRecord.FieldValues;
         DrawingReference = dict[dName];
         MountSide = dict[sName] == "B" ? Side.Bottom : Side.Top;
-        var xR = double.TryParse(dict[xName], out var x);
-        var yR = double.TryParse(dict[yName], out var y);
-
-        if (xR && yR)
-        {
-            Barycenter = new Barycenter
-            {
-                X = x,
-                Y = y,
-            };
-
-            Available = true;
-        }
-        else
-        {
-            Available = false;
-        }
     }
 
-    public bool TryCalculateBarycenterCoordinates(TestPoint[] testPoints, out Coordinates co)
+    public bool TryCalculateBarycenterCoordinates(TestPoint[] testPoints, int site, out Coordinates co)
     {
-        var dr = testPoints
-            .Where(t => string.Equals(t.DrawingReference, DrawingReference, StringComparison.OrdinalIgnoreCase))
-            .ToArray();
+        var dr = (
+            from tp in testPoints
+            where
+                string.Equals(tp.DrawingReference, DrawingReference, StringComparison.OrdinalIgnoreCase) &&
+                tp.Site == site
+            select tp).ToArray();
 
         if (dr.Length == 0)
         {
@@ -71,7 +53,7 @@ public class Part
         var yMin = dr.Select(r => r.YPosition).Min();
         var yMax = dr.Select(r => r.YPosition).Max();
         var yDiff = yMax - yMin;
-        var diff = (int)Math.Truncate((new[] { xDiff, yDiff }).Max());
+        var diff = (int)Math.Truncate(new[] { xDiff, yDiff }.Max());
 
         co =  new Coordinates { X = x, Y = y, Edge = diff };
 
@@ -104,7 +86,7 @@ public class Part
             // using for marking bom file's non-existence
         }
 
-        var availableComponents = records.Select(r => new Part(r)).Where(c => c.Available);
+        var availableComponents = records.Select(r => new Part(r));
 
         if (!bomExists) return [.. availableComponents];
 

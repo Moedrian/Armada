@@ -10,15 +10,16 @@ namespace NewProject.Util.TpList;
 
 public class TestPoint
 {
+    public required int Site { get; init; }
     public required string Name { get; init; }
     public required string DrawingReference { get; init; }
-    public required string Number { get; init; }
+    public required int Number { get; init; }
     public required double XPosition { get; init; }
     public required double YPosition { get; init; }
     public required bool Available { get; init; }
 
     [SetsRequiredMembers]
-    public TestPoint(DbfRecord record)
+    public TestPoint(DbfRecord record, int tpOffset)
     {
         const string tName = "TP_NAME";
         const string dName = "DRAWING_RE";
@@ -28,7 +29,11 @@ public class TestPoint
 
         var dict = record.FieldValues;
         Name = dict[tName];
-        Number = dict[numName];
+        Number = int.Parse(dict[numName]);
+        if (tpOffset == 0)
+            Site = 1;
+        else
+            Site = Number / tpOffset + 1;
         DrawingReference = dict[dName];
         var xR = double.TryParse(dict[xName], out var x);
         var yR = double.TryParse(dict[yName], out var y);
@@ -51,14 +56,15 @@ public class TestPoint
         var dbfFile = Path.Combine(adapterDir, "TPLIST.DBF");
         var parser = new DbfParser(dbfFile);
         var records = parser.GetAllDbfRecords();
+        var offset = LeoProp.GetTestPointOffset(type, program);
 
-        var testPoints = records.Select(r => new TestPoint(r)).Where(tp => tp.Available);
+        var testPoints = records.Select(r => new TestPoint(r, offset)).Where(tp => tp.Available);
 
         return testPoints.ToArray();
     }
 
     public override string ToString()
     {
-        return $"Name: {Name}, Number: {Number}, Drawing Reference: {DrawingReference}, X: {XPosition}, Y: {YPosition}";
+        return $"Name: {Name}, Site: {Site}, Number: {Number}, Drawing Reference: {DrawingReference}, X: {XPosition}, Y: {YPosition}";
     }
 }

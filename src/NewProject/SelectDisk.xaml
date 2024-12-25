@@ -6,13 +6,42 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <GroupBox Header="Select Project Disk" Margin="5">
-        <Grid Height="40" VerticalAlignment="Top" Margin="30">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Margin="5" HorizontalAlignment="Right">Disk:</Label>
-            <ComboBox Grid.Column="1" Name="DiskListComboBox" Margin="5" VerticalContentAlignment="Center"/>
+        <Grid Height="160" VerticalAlignment="Top" Margin="30">
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="MinWidth" Value="120"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0">Disk:</Label>
+            <ComboBox Grid.Row="0" Grid.Column="1" Name="DiskListComboBox" Margin="5" VerticalContentAlignment="Center"/>
+
+            <Label Grid.Row="1" Grid.Column="0">Pixels per Millimeter Ratio:</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" Name="RatioBox"/>
+
+            <Label Grid.Row="2" Grid.Column="0">Border width pixels:</Label>
+            <TextBox Grid.Row="2" Grid.Column="1" Name="BorderWidthBox"/>
+
+            <Label Grid.Row="3" Grid.Column="0">Similarity Rate (%):</Label>
+            <TextBox Grid.Row="3" Grid.Column="1" Name="SimilarityRateBox"/>
         </Grid>
     </GroupBox>
 </UserControl>

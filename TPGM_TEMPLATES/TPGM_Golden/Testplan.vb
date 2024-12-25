@@ -1,6 +1,7 @@
 Option Strict On
 Option Explicit On
 
+Imports AtosF
 Imports Spea.VisionNet.Instructions
 Imports System.IO
 Imports ArmadaPack
@@ -12,84 +13,79 @@ Module modTestplan
     Public Function Testplan() As Integer
 
         Const cameraId As Integer = 1
-        Dim gain As Double = 50
-        Dim exposureTime As Integer = 7000
+        Const suffix As String = "_golden.bmp"
 
         Dim failFlag As Integer = PASS
 
         Try
-            ' Dim tp As Integer = (site - 1) * config.TestPointOffset + config.BarcodeTestPoint
-            ' there is no need to add offset to the test point number
-
-            ' 1. move camera back to the initial position
-            ' AtosF.CameraPark()
-            ' IA.iaCameraGainWrite(rCameraID, rGain, "", 0, 0)
-            ' IA.iaCameraExposureTimeWrite(rCameraID, rExposureTime, "", 0, 0)
-
-            AtosF.AlignExecute()
-
             Dim ftpDir As DirectoryInfo = Directory.GetParent(CurrentDir)
             Dim visionDir As String = Path.Combine(ftpDir.FullName, "Vision")
             Dim visionXml As String = Path.Combine(visionDir, "vision.xml")
-            Dim visionObj As Vision = ArmadaHelper.Deserialize(visionXml)
+            Dim visionInstance As Vision = ArmadaHelper.Deserialize(visionXml)
 
-            ' 2. move FP camera on selected components
-            For Each part As TestPart In visionObj.TestParts
-                Dim x As Integer = part.CoordinateX
-                Dim y As Integer = part.CoordinateY
-                Dim df As String = part.DrawingReference
-
-                Dim errorCode As Integer = AtosF.CameraMove(cameraId, x, y)
-                Dim capturedImage As Integer
-
-                If errorCode = RESULT_PASS Then
-                    MsgPrintLog("Capturing golden sample picture of component " & df, NO)
-                    errorCode = IA.iaImageCapture(cameraID, df, 0, capturedImage, 0)
-                Else
-                    MsgPrintLog("Error during moving camera for component " & df, NO)
-                    Continue For
-                End If
-
-                Dim filename As String = part.DrawingReference + "_Golden.bmp"
-                Dim fullname As String = Path.Combine(visionDir, filename)
-
-                If errorCode = RESULT_PASS Then
-                    MsgPrintLog("Saving golden sample picture of component " & df, NO)
-                    errorCode = IA.iaImageSave(capturedImage, fullname, df, 0, 0)
-                Else
-                    MsgPrintLog("Error during capturing image for component " & df, NO)
-                    Continue For
-                End If
-
-                If errorCode = RESULT_PASS Then
-                    part.GoldenSampleFilePath = filename
-                    MsgPrintLog("Golden sample picture of component " & df & " saved successfully.", NO)
-                Else
-                    MsgPrintLog("Error during saving image for component " & df, NO)
-                    Continue For
-                End If
-
-                MsgPrintLog("----------------------------------------------------------------", NO)
+            MsgPrintLog("Clear previous session if exists...", NO)
+            For Each f As String In Directory.GetFiles(visionDir, "*" & suffix)
+                File.Delete(f)
             Next
 
-            ArmadaHelper.Serialize(visionXml, visionObj)
+            For Each group As TestPartsGroup In visionInstance.Groups
 
-            'If rErrorCode = 0 Then
-            '    rErrorCode = IA.iaCameraOpen(rCameraID, rTestPoint, 0, 0)
-            '    If rErrorCode <> 0 Then FailFlag = FAIL
-            'End If
-            '----- Initialization FP camera -----  
-            'If rErrorCode = 0 Then
-            '    Dim pErrorCode As Integer
-            '    rErrorCode = IA.iaCameraGainWrite(rCameraID, rGain, "TP", 0, pErrorCode)
-            '    If rErrorCode <> 0 Then FailFlag = FAIL
-            'End If
-            'If rErrorCode = 0 Then
-            '    rErrorCode = IA.iaCameraExposureTimeWrite(rCameraID, rExposureTime, "", 0, 0)
-            '    If rErrorCode <> 0 Then FailFlag = FAIL
-            'End If
+                Dim site As Integer = group.Site
+                UseSiteWrite(site)
 
-            AtosF.CameraPark()
+                MsgPrintLog("Start operation on site " & site, NO)
+
+                AlignExecute()
+
+                ' move FP camera on selected components
+                For Each part As TestPart In group.TestParts
+                    Dim x As Integer = part.CoordinateX
+                    Dim y As Integer = part.CoordinateY
+                    Dim df As String = part.DrawingReference
+
+                    Dim errorCode As Integer = CameraMove(cameraId, x, y)
+                    Dim capturedImage As Integer
+
+                    If errorCode = RESULT_PASS Then
+                        MsgPrintLog("Site " & site & " capturing golden sample picture of component " & df, NO)
+                        errorCode = IA.iaImageCapture(cameraId, df, 0, capturedImage, 0)
+                    Else
+                        MsgPrintLog("Site " & site & " error during moving camera for component " & df, NO)
+                        SiteResultWrite(site, RESULT_FAIL)
+                        failFlag = FAIL
+                        Continue For
+                    End If
+
+                    Dim filename As String = part.DrawingReference & "_" & site & suffix
+                    Dim fullname As String = Path.Combine(visionDir, filename)
+
+                    If errorCode = RESULT_PASS Then
+                        MsgPrintLog("Site " & site & " saving golden sample picture of component " & df, NO)
+                        errorCode = IA.iaImageSave(capturedImage, fullname, df, 0, 0)
+                    Else
+                        MsgPrintLog("Site " & site & " error during capturing image for component " & df, NO)
+                        SiteResultWrite(site, RESULT_FAIL)
+                        failFlag = FAIL
+                        Continue For
+                    End If
+
+                    If errorCode = RESULT_PASS Then
+                        part.GoldenSampleFilePath = filename
+                        MsgPrintLog("Site " & site & " golden sample picture of component " & df & " saved successfully.", NO)
+                    Else
+                        MsgPrintLog("Site " & site & " error during saving image for component " & df, NO)
+                        SiteResultWrite(site, RESULT_FAIL)
+                        failFlag = FAIL
+                        Continue For
+                    End If
+
+                    MsgPrintLog("----------------------------------------------------------------", NO)
+                Next
+
+                CameraPark()
+            Next
+
+            ArmadaHelper.Serialize(visionXml, visionInstance)
 
         Catch ex As Exception
             LogPrint(ex.Message, YES)

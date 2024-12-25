@@ -2,20 +2,14 @@
 
 call .\build_ArmadaPack.bat
 
-set oDir=.\artifacts\Armada
-set pyDir=py_scripts
-set pyFile=%pyDir%\pythonProject\main.py
-set oDirPy=%oDir%\%pyDir%
+echo copying TPGM Templates
+mkdir .\artifacts\Armada\TPGM_TEMPLATES
+xcopy .\TPGM_TEMPLATES .\artifacts\Armada\TPGM_TEMPLATES /Q /E /Y
 
-if exist %oDirPy% (
-    rmdir /s /q %oDirPy%
-)
-
-mkdir %oDirPy%
 echo copying python file...
-copy .\%pyFile% %oDirPy%
+xcopy .\py_scripts .\artifacts\Armada\py_env /Q /E /Y
 echo =======================================
 
 echo Building New Project...
-dotnet build .\src\NewProject -o %oDir%
+dotnet publish .\src\NewProject -r win-x64 -c Release --self-contained true -p:PublishSingleFile=true -o .\artifacts\Armada
 echo =======================================
